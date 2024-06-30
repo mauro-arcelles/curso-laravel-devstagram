@@ -5,14 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class PostController extends Controller
+class PostController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [new Middleware('auth', except: ['show', 'index'])];
+    }
+
     //
     public function index(User $user)
     {
+        $posts = Post::where('user_id', $user->id)->paginate(20);
+
         return view('dashboard', [
             'user' => $user,
+            'posts' => $posts,
         ]);
     }
 
@@ -33,7 +43,7 @@ class PostController extends Controller
         //     'titulo' => $request->titulo,
         //     'descripcion' => $request->descripcion,
         //     'imagen' => $request->imagen,
-        //     'user_id' => auth()->user()->id,
+        //     'user_id' => auth()->id(),
         // ]);
 
         // another way to create a post
@@ -41,7 +51,7 @@ class PostController extends Controller
         // $post->titulo = $request->titulo;
         // $post->descripcion = $request->descripcion;
         // $post->imagen = $request->imagen;
-        // $post->user_id = auth()->user()->id;
+        // $post->user_id = auth()->id();
         // $post->save();
 
         // another way to create a post
@@ -49,9 +59,17 @@ class PostController extends Controller
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
             'imagen' => $request->imagen,
-            'user_id' => auth()->user()->id,
+            'user_id' => auth()->id(),
         ]);
 
         return redirect()->route('posts.index', auth()->user()->username);
+    }
+
+    public function show(User $user, Post $post)
+    {
+        return view('posts.show', [
+            'post' => $post,
+            'user' => $user,
+        ]);
     }
 }
