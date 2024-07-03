@@ -5,23 +5,15 @@
 @endsection
 
 @section('contenido')
-    @if ($posts->count())
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @foreach ($posts as $post)
-                <div>
-                    <a href="{{ route('posts.show', ['post' => $post, 'user' => $post->user]) }}">
-                        <img src="{{ asset('uploads') . '/' . $post->imagen }}" alt="Imagen del post {{ $post->titulo }}" />
-                    </a>
-                </div>
-            @endforeach
-        </div>
+    {{-- <x-listar-post>
+        <x-slot:titulo>
+            <header>Esto es un header</header>
+        </x-slot:titulo>
 
-        <div>
-            {{ $posts->links('pagination::tailwind') }}
-        </div>
-    @else
-        <p class="text-center">No hay publicaciones</p>
-    @endif
+        <h1>Mostrando</h1>
+    </x-listar-post> --}}
+
+    <x-listar-post :posts="$posts" />
 
     {{-- @forelse ($posts as $post)
         <h1>{{ $post->titulo }}</h1>
